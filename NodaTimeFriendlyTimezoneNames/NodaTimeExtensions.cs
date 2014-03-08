@@ -1,4 +1,5 @@
-﻿using NodaTime.TimeZones;
+﻿using NodaTime;
+using NodaTime.TimeZones;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -166,5 +167,37 @@ namespace NodaTimeFriendlyTimezoneNames
                      } ).ToDictionary(oo => oo.key, oo => oo.value);
         }
 
+        public static Dictionary<string, string> ToFriendlyTimezonesWithOffset(this IList<TzdbZoneLocation> zoneLocations)
+        {
+            var now = SystemClock.Instance.Now;
+            var tzdb = DateTimeZoneProviders.Tzdb;
+
+            return ( from zone in zoneLocations
+                     join map in NodaToFriendlyTimezoneMap on zone.ZoneId equals map.Key into friendly
+                     from submap in friendly.DefaultIfEmpty()
+                     let zoneId = zone.ZoneId
+                     let tz = tzdb[zoneId]
+                     let offset = tz.GetZoneInterval(now).StandardOffset
+                     select new {
+                         key = zone.ZoneId,
+                         value = string.Format("({0:+HH:mm}) {1}", offset, ( !string.IsNullOrWhiteSpace(submap.Key) ? submap.Value : zone.ZoneId.Replace("_", " ") ))
+                     } ).ToDictionary(oo => oo.key, oo => oo.value);
+        }
+
+        public static Dictionary<string, string> FilterToOnlyFriendlyTimezonesWithOffset(this IList<TzdbZoneLocation> zoneLocations)
+        {
+            var now = SystemClock.Instance.Now;
+            var tzdb = DateTimeZoneProviders.Tzdb;
+
+            return ( from zone in zoneLocations
+                     join map in NodaToFriendlyTimezoneMap on zone.ZoneId equals map.Key
+                     let zoneId = zone.ZoneId
+                     let tz = tzdb[zoneId]
+                     let offset = tz.GetZoneInterval(now).StandardOffset
+                     select new {
+                         key = zone.ZoneId,
+                         value = string.Format("({0:+HH:mm}) {1}", offset, map.Value)
+                     } ).ToDictionary(oo => oo.key, oo => oo.value);
+        }
     }
 }
