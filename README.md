@@ -1,7 +1,7 @@
 NodaTimeFriendlyTimezoneNames
 ========================
 
-Noda / Joda ZoneIds to the friendly Timezone names used by Ruby on Rails ActiveSupport
+Noda / Joda ZoneIds to the friendly Timezone names used by Ruby on Rails ActiveSupport (duplicates have been removed to keep it simple)
 
 ## Install
 
