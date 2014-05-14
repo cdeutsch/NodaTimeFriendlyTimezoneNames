@@ -177,7 +177,7 @@ namespace NodaTimeFriendlyTimezoneNames
                      from submap in friendly.DefaultIfEmpty()
                      let zoneId = zone.ZoneId
                      let tz = tzdb[zoneId]
-                     let offset = tz.GetZoneInterval(now).StandardOffset
+                     let offset = tz.GetZoneInterval(now).WallOffset
                      select new {
                          key = zone.ZoneId,
                          value = string.Format("({0:+HH:mm}) {1}", offset, ( !string.IsNullOrWhiteSpace(submap.Key) ? submap.Value : zone.ZoneId.Replace("_", " ") ))
@@ -193,7 +193,7 @@ namespace NodaTimeFriendlyTimezoneNames
                      join map in NodaToFriendlyTimezoneMap on zone.ZoneId equals map.Key
                      let zoneId = zone.ZoneId
                      let tz = tzdb[zoneId]
-                     let offset = tz.GetZoneInterval(now).StandardOffset
+                     let offset = tz.GetZoneInterval(now).WallOffset
                      select new {
                          key = zone.ZoneId,
                          value = string.Format("({0:+HH:mm}) {1}", offset, map.Value)
